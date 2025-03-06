@@ -100,7 +100,7 @@ VectorInt16 aa;   // Accel sensor measurements
 VectorInt16 gg;   // Gyro sensor measurements
 
 // IMU Offset mode 선택
-String offsetMode = "manual"; // 기본 모드 manual로 설정
+String offsetMode = "dynamic"; // 기본 모드 manual로 설정
 
 // 수동 offset 값 입력부
 // 현재 Red light imu에 맞춰둠
@@ -396,7 +396,14 @@ void timer_callback(rcl_timer_t * timer, int64_t last_call_time){
   RCLC_UNUSED(last_call_time);
   if (timer != NULL){
     update_motor_velocity();
+    if (offsetMode == "manual"){
+      update_imu_data_manual();
+    }
+    else {
+      update_imu_data_dynamic();
+    }
     RCSOFTCHECK(rcl_publish(&encoder_publisher,&motor,NULL));
+    RCSOFTCHECK(rcl_publish(&imu_publisher,&imu, NULL));
   }
 }
 
